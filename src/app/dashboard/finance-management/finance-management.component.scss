@@ -1,0 +1,424 @@
+.finance-container {
+  padding: 2rem;
+
+  .finance-header {
+    margin-bottom: 2rem;
+
+    h2 {
+      margin: 0;
+      color: var(--text-color);
+      font-size: 1.75rem;
+    }
+  }
+
+  .finance-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: var(--surface-card);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-color-secondary);
+
+      i {
+        font-size: 1.25rem;
+      }
+
+      &:hover {
+        background: var(--surface-hover);
+        color: var(--text-color);
+      }
+
+      &.active {
+        background: var(--primary-color);
+        color: white;
+      }
+    }
+  }
+
+  .finance-content {
+    background: var(--surface-card);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .tab-content {
+      h3 {
+        margin: 0 0 1.5rem;
+        color: var(--text-color);
+        font-size: 1.25rem;
+      }
+    }
+  }
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filters-section {
+  margin-bottom: 1.5rem;
+  background: var(--surface-ground);
+  padding: 1rem;
+  border-radius: 6px;
+
+  .search-filters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    ::ng-deep {
+      .p-calendar, .p-dropdown {
+        min-width: 200px;
+      }
+    }
+  }
+}
+
+::ng-deep {
+  .p-datatable {
+    .p-datatable-header {
+      background: var(--surface-ground);
+    }
+
+    .employee-info {
+      display: flex;
+      flex-direction: column;
+
+      .name {
+        font-weight: 500;
+      }
+
+      .id {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .finance-container {
+    padding: 1rem;
+
+    .finance-nav {
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .nav-item {
+        padding: 0.75rem 1rem;
+      }
+    }
+  }
+
+  .filters-section {
+    .search-filters {
+      flex-direction: column;
+
+      .search-input {
+        width: 100%;
+      }
+
+      ::ng-deep {
+        .p-calendar, .p-dropdown {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+.budget-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .overview-card {
+    background: var(--surface-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-color-secondary);
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+
+    .card-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    .card-footer {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+    }
+
+    .progress-bar {
+      .p-progressbar {
+        height: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      span {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+
+    &.total-budget {
+      border-left: 4px solid var(--primary-color);
+    }
+
+    &.allocated {
+      border-left: 4px solid var(--warning-color);
+    }
+
+    &.utilized {
+      border-left: 4px solid var(--success-color);
+    }
+  }
+}
+
+.budget-charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .chart-card {
+    background: var(--surface-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 300px;
+
+    h4 {
+      margin: 0 0 1rem;
+      color: var(--text-color);
+    }
+
+    ::ng-deep {
+      canvas {
+        max-height: 220px !important;
+      }
+    }
+  }
+}
+
+.budget-table-section {
+  background: var(--surface-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h4 {
+      margin: 0;
+      color: var(--text-color);
+    }
+
+    .table-filters {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  .department-info {
+    display: flex;
+    flex-direction: column;
+
+    .name {
+      font-weight: 500;
+    }
+
+    .manager {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.budget-form {
+  display: grid;
+  gap: 1rem;
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      color: var(--text-color-secondary);
+      font-size: 0.875rem;
+    }
+
+    ::ng-deep {
+      .p-dropdown, .p-calendar, .p-inputnumber {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .budget-overview,
+  .budget-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-table-section {
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .table-filters {
+        width: 100%;
+        flex-direction: column;
+
+        ::ng-deep {
+          .p-dropdown {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+}
+
+.reimbursement-details {
+  .details-section {
+    margin-bottom: 2rem;
+
+    h4 {
+      margin: 0 0 1rem;
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+        }
+
+        span {
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+
+  .approval-form {
+    .form-field {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+      }
+
+      textarea {
+        width: 100%;
+      }
+    }
+
+    .approval-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+  }
+
+  .payment-form {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+
+    .form-field {
+      flex: 1;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color-secondary);
+        font-size: 0.875rem;
+      }
+
+      ::ng-deep {
+        .p-dropdown {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .reimbursement-details {
+    .details-section {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .payment-form {
+      flex-direction: column;
+      gap: 1rem;
+
+      .form-field {
+        width: 100%;
+      }
+    }
+  }
+}

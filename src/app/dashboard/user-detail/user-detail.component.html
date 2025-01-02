@@ -1,0 +1,416 @@
+<div class="user-detail-view" *ngIf="display">
+  <div class="user-header">
+    <div class="header-left">
+      <img [src]="user?.avatar" [alt]="user?.name" class="user-avatar">
+      <div class="user-info">
+        <h2>{{user?.name}}</h2>
+        <p>{{user?.designation}}</p>
+      </div>
+    </div>
+  </div>
+
+  <p-tabView [(activeIndex)]="activeTab">
+    <p-tabPanel header="Basic Info">
+      <div class="basic-info-container">
+        <div class="info-grid">
+          <!-- Column 1 -->
+          <div class="field">
+            <label>Company Name</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.company" 
+                     placeholder="Enter Company Name" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Email ID (Official)</label>
+            <div class="p-input-filled">
+              <input type="email" pInputText [value]="user?.emailOfficial" 
+                     placeholder="Enter Official Email" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Age</label>
+            <div class="p-input-filled">
+              <input type="number" pInputText [value]="user?.age" 
+                     placeholder="Enter Age" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Designation</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.designation" 
+                     placeholder="Enter Designation" readonly>
+            </div>
+          </div>
+
+          <!-- Column 2 -->
+          <div class="field">
+            <label>Full Name</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.name" 
+                     placeholder="Enter Full Name" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Email ID (Personal)</label>
+            <div class="p-input-filled">
+              <input type="email" pInputText [value]="user?.emailPersonal" 
+                     placeholder="Enter Personal Email" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Gender</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.gender" 
+                     placeholder="Select Gender" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Time of Visit</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.time" 
+                     placeholder="Select Time" readonly>
+            </div>
+          </div>
+
+          <!-- Column 3 -->
+          <div class="field">
+            <label>Country</label>
+            <div class="p-input-filled">
+              <input type="text" pInputText [value]="user?.country" 
+                     placeholder="Enter Country" readonly>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Reason for Visit</label>
+            <div class="p-input-filled">
+              <textarea pInputTextarea [value]="user?.reasonForVisit" 
+                        placeholder="Enter Reason for Visit" 
+                        [rows]="3" readonly>
+              </textarea>
+            </div>
+          </div>
+
+          <div class="field document-status">
+            <label>Document Status</label>
+            <div class="status-grid">
+              <div class="status-item">
+                <span class="status-label">Passport</span>
+                <p-tag [severity]="getStatusSeverity(user?.passportStatus)" 
+                       [value]="user?.passportStatus"
+                       styleClass="status-tag">
+                </p-tag>
+              </div>
+              <div class="status-item">
+                <span class="status-label">Visa</span>
+                <p-tag [severity]="getStatusSeverity(user?.visaStatus)" 
+                       [value]="user?.visaStatus"
+                       styleClass="status-tag">
+                </p-tag>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Documents">
+      <p-table [value]="documents" [responsive]="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Document Type</th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Upload Date</th>
+            <th>Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-doc>
+          <tr>
+            <td>{{doc.type}}</td>
+            <td>{{doc.name}}</td>
+            <td>
+              <p-tag [severity]="doc.status === 'Verified' ? 'success' : 'warning'" 
+                     [value]="doc.status">
+              </p-tag>
+            </td>
+            <td>{{doc.uploadDate}}</td>
+            <td>
+              <button pButton icon="pi pi-download" 
+                      class="p-button-text" 
+                      (click)="downloadDocument(doc)">
+              </button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+
+    <p-tabPanel header="Travel Documentation">
+      <div class="travel-documentation">
+        <div class="two-column-layout">
+          <!-- Left Column: Itinerary Overview -->
+          <div class="itinerary-list">
+            <div class="section-title">
+              <h3>Travel Itinerary</h3>
+              <p>Select a destination to view details</p>
+            </div>
+
+            <div class="location-list">
+              <div *ngFor="let travel of travelInfo" 
+                   class="location-item"
+                   [class.active]="selectedLocation === travel.to"
+                   (click)="selectLocation(travel.to)">
+                <div class="location-header">
+                  <i class="pi" [ngClass]="getTravelModeIcon(travel.mode)"></i>
+                  <div class="location-info">
+                    <span class="city">{{travel.to}}</span>
+                    <span class="dates">{{getFormattedDate(travel.date)}}</span>
+                  </div>
+                </div>
+                <p-tag [severity]="travel.status === 'Confirmed' ? 'success' : 'warning'" 
+                       [value]="travel.status">
+                </p-tag>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Detailed Information -->
+          <div class="travel-details" *ngIf="getSelectedTravel()">
+            <div class="detail-header">
+              <div class="destination-info">
+                <h3>{{getSelectedTravel()?.to}}</h3>
+                <div class="travel-dates">
+                  <i class="pi pi-calendar"></i>
+                  <span>{{getFormattedDate(getSelectedTravel()?.date)}}</span>
+                </div>
+              </div>
+              <div class="status-ribbon" 
+                   [class.confirmed]="getSelectedTravel()?.status === 'Confirmed'">
+                {{getSelectedTravel()?.status}}
+              </div>
+            </div>
+
+            <!-- Travel Information -->
+            <div class="detail-section">
+              <h2>
+                <i class="pi" [ngClass]="getTravelModeIcon(getSelectedTravel()?.mode)"></i>
+                Travel Details
+              </h2>
+              <div class="journey-card">
+                <div class="journey-header">
+                  <div class="carrier-info">
+                    <h3>{{getSelectedTravel()?.carrier}}</h3>
+                    <div class="booking-ref">
+                      <i class="pi pi-ticket"></i>&nbsp;
+                      <span>Booking ID: {{getSelectedTravel()?.bookingRef}}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="journey-timeline">
+                  <div class="departure">
+                    <div class="time">{{getSelectedTravel()?.departureTime}}</div>
+                    <div class="location">{{getSelectedTravel()?.from}}</div>
+                    <div class="terminal" *ngIf="getSelectedTravel()?.terminal">
+                      Terminal: {{getSelectedTravel()?.terminal}}
+                    </div>
+                  </div>
+                  <div class="journey-line">
+                    <span class="duration">{{getDurationInHours(getSelectedTravel()?.duration)}}</span>
+                    <div class="line"></div>
+                  </div>
+                  <div class="arrival">
+                    <div class="time">{{getSelectedTravel()?.arrivalTime}}</div>
+                    <div class="location">{{getSelectedTravel()?.to}}</div>
+                    <div class="terminal" *ngIf="getSelectedTravel()?.terminal">
+                      Terminal: {{getSelectedTravel()?.terminal}}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Accommodation Information -->
+            <div class="detail-section" *ngIf="getAccommodationForTravel(getSelectedTravel())">
+              <h2>
+                <i class="pi pi-building"></i>
+                Accommodation Details
+              </h2>
+              <div class="accommodation-card">
+                <div class="hotel-header">
+                  <div class="hotel-info">
+                    <h3>{{getAccommodationForTravel(getSelectedTravel())?.hotelName}}</h3>
+                    <div class="location-info">
+                      <div class="address-line">
+                        <i class="pi pi-map-marker"></i>
+                        <div class="address-details">
+                          <p class="city">{{getAccommodationForTravel(getSelectedTravel())?.location}}</p>
+                          <p class="full-address">{{getAccommodationForTravel(getSelectedTravel())?.address}}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stay-info">
+                  <!-- Room and Booking Info -->
+                  <div class="booking-details">
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <i class="pi pi-home"></i>
+                        <div class="detail-content">
+                          <span class="label">Room Type</span>
+                          <span class="value">{{getAccommodationForTravel(getSelectedTravel())?.roomType}}</span>
+                        </div>
+                      </div>
+                      <div class="detail-item">
+                        <i class="pi pi-ticket"></i>
+                        <div class="detail-content">
+                          <span class="label">Booking Reference</span>
+                          <span class="value">{{getAccommodationForTravel(getSelectedTravel())?.bookingRef}}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Check-in/out Info -->
+                  <div class="dates-info">
+                    <div class="date-item">
+                      <div class="date-label">
+                        <i class="pi pi-calendar"></i>
+                        <span>Check-in</span>
+                      </div>
+                      <div class="date-value">
+                        {{getFormattedDate(getAccommodationForTravel(getSelectedTravel())?.checkIn)}}
+                      </div>
+                    </div>
+                    <div class="date-separator"></div>
+                    <div class="date-item">
+                      <div class="date-label">
+                        <i class="pi pi-calendar"></i>
+                        <span>Check-out</span>
+                      </div>
+                      <div class="date-value">
+                        {{getFormattedDate(getAccommodationForTravel(getSelectedTravel())?.checkOut)}}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Amenities section remains the same -->
+                <div class="amenities-section">
+                  <h6>Amenities</h6>
+                  <div class="amenities-list">
+                    <p-chip *ngFor="let amenity of getAccommodationForTravel(getSelectedTravel())?.amenities" 
+                            [label]="amenity">
+                    </p-chip>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Finance">
+      <div class="finance-dashboard">
+        <div class="budget-overview">
+          <div class="budget-cards">
+            <div class="budget-card total">
+              <div class="card-content">
+                <span class="label">Total Budget</span>
+                <span class="amount">${{getTotalBudget() | number:'1.0-0'}}</span>
+              </div>
+              <i class="pi pi-wallet"></i>
+            </div>
+            <div class="budget-card spent">
+              <div class="card-content">
+                <span class="label">Total Spent</span>
+                <span class="amount">${{getTotalSpent() | number:'1.0-0'}}</span>
+              </div>
+              <i class="pi pi-money-bill"></i>
+            </div>
+            <div class="budget-card remaining">
+              <div class="card-content">
+                <span class="label">Remaining</span>
+                <span class="amount">${{getTotalRemaining() | number:'1.0-0'}}</span>
+              </div>
+              <i class="pi pi-chart-pie"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="expense-breakdown">
+          <h3>Expense Breakdown</h3>
+          <div class="expense-cards">
+            <div *ngFor="let finance of financeDetails" class="expense-card">
+              <div class="expense-header">
+                <span class="category">{{finance.category}}</span>
+                <span class="percentage">{{(finance.spent/finance.allocated)*100 | number:'1.0-0'}}%</span>
+              </div>
+              <p-progressBar 
+                [value]="(finance.spent/finance.allocated)*100"
+                [showValue]="false"
+                styleClass="expense-progress">
+              </p-progressBar>
+              <div class="expense-details">
+                <div class="detail-row">
+                  <span class="label">Allocated</span>
+                  <span class="value">${{finance.allocated | number:'1.0-0'}}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Spent</span>
+                  <span class="value">${{finance.spent | number:'1.0-0'}}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">Remaining</span>
+                  <span class="value">${{finance.remaining | number:'1.0-0'}}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Reports">
+      <div class="reports-section">
+        <div class="section-title">
+          <h3>Travel Analytics</h3>
+          <p>Overview of travel expenses and statistics</p>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h4>Expense Distribution</h4>
+            <p-chart type="pie" [data]="expenseChartData" [options]="pieChartOptions"></p-chart>
+          </div>
+
+          <div class="chart-card">
+            <h4>Monthly Spending Trend</h4>
+            <p-chart type="line" [data]="spendingTrendData" [options]="lineChartOptions"></p-chart>
+          </div>
+
+          <div class="chart-card">
+            <h4>Budget Utilization</h4>
+            <p-chart type="bar" [data]="budgetChartData" [options]="barChartOptions"></p-chart>
+          </div>
+
+          <div class="chart-card">
+            <h4>Travel Mode Distribution</h4>
+            <p-chart type="doughnut" [data]="travelModeData" [options]="doughnutChartOptions"></p-chart>
+          </div>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div> 

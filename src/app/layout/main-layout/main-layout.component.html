@@ -1,0 +1,37 @@
+<div class="layout-wrapper">
+  <div class="layout-sidebar">
+    <div class="sidebar-header">
+      <img src="assets/logo.png" alt="Logo">
+      <h3>Travel Portal</h3>
+    </div>
+
+    <ul class="sidebar-menu">
+      <li [class.active]="currentRoute === '/dashboard'" 
+          (click)="navigate('/dashboard')">
+        <i class="pi pi-home"></i>
+        <span>Dashboard</span>
+      </li>
+      <li [class.active]="currentRoute === '/dashboard/requests'" 
+          (click)="navigate('/dashboard/requests')">
+        <i class="pi pi-list"></i>
+        <span>Travel Requests</span>
+        <span class="pending-badge" *ngIf="pendingRequestsCount > 0">
+          {{pendingRequestsCount}}
+        </span>
+      </li>
+      <li [class.active]="currentRoute === '/finance'" 
+          (click)="navigate('/finance')">
+        <i class="pi pi-dollar"></i>
+        <span>Manage Finance</span>
+      </li>
+      <li (click)="logout()">
+        <i class="pi pi-sign-out"></i>
+        <span>Logout</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="layout-content">
+    <router-outlet></router-outlet>
+  </div>
+</div> 

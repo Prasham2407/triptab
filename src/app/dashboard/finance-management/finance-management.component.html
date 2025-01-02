@@ -1,0 +1,642 @@
+<div class="finance-container">
+  <div class="finance-header">
+    <h2>Finance Management</h2>
+  </div>
+
+  <div class="finance-nav">
+    <div class="nav-item" 
+         [class.active]="activeTab === 'expenses'"
+         (click)="setActiveTab('expenses')">
+      <i class="pi pi-file"></i>
+      <span>Expense Management</span>
+    </div>
+    <div class="nav-item" 
+         [class.active]="activeTab === 'budgets'"
+         (click)="setActiveTab('budgets')">
+      <i class="pi pi-wallet"></i>
+      <span>Budget Management</span>
+    </div>
+    <div class="nav-item" 
+         [class.active]="activeTab === 'reimbursements'"
+         (click)="setActiveTab('reimbursements')">
+      <i class="pi pi-dollar"></i>
+      <span>Reimbursements</span>
+    </div>
+    <div class="nav-item" 
+         [class.active]="activeTab === 'reports'"
+         (click)="setActiveTab('reports')">
+      <i class="pi pi-chart-bar"></i>
+      <span>Financial Reports</span>
+    </div>
+  </div>
+
+  <div class="finance-content">
+    <!-- Expense Management -->
+    <div *ngIf="activeTab === 'expenses'" class="tab-content">
+      <div class="content-header">
+        <h3>Expense Management</h3>
+        <div class="header-actions">
+          <button pButton 
+                  icon="pi pi-file-excel" 
+                  label="Export to Excel"
+                  class="p-button-success"
+                  (click)="exportToExcel()">
+          </button>
+        </div>
+      </div>
+
+      <div class="filters-section">
+        <div class="search-filters">
+          <span class="p-input-icon-left search-input">
+            <i class="pi pi-search"></i>
+            <input type="text" 
+                   pInputText 
+                   placeholder="Search expenses..."
+                   [(ngModel)]="filters.searchTerm"
+                   (input)="applyFilters()">
+          </span>
+
+          <p-calendar [(ngModel)]="filters.dateRange" 
+                      selectionMode="range"
+                      [showIcon]="true"
+                      placeholder="Select Date Range"
+                      (onSelect)="applyFilters()">
+          </p-calendar>
+
+          <p-dropdown [options]="statusOptions" 
+                     [(ngModel)]="filters.status"
+                     placeholder="Select Status"
+                     (onChange)="applyFilters()">
+          </p-dropdown>
+
+          <p-dropdown [options]="categoryOptions" 
+                     [(ngModel)]="filters.category"
+                     placeholder="Select Category"
+                     (onChange)="applyFilters()">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <p-table #dt 
+               [value]="filteredExpenses" 
+               [paginator]="true" 
+               [rows]="10"
+               [sortField]="sortField"
+               [sortOrder]="sortOrder"
+               [rowsPerPageOptions]="[10,25,50]"
+               [loading]="loading"
+               styleClass="p-datatable-striped">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="employeeName">
+              Employee Name
+              <p-sortIcon field="employeeName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="date">
+              Date
+              <p-sortIcon field="date"></p-sortIcon>
+            </th>
+            <th pSortableColumn="category">
+              Category
+              <p-sortIcon field="category"></p-sortIcon>
+            </th>
+            <th pSortableColumn="amount" style="width: 120px">
+              Amount
+              <p-sortIcon field="amount"></p-sortIcon>
+            </th>
+            <th pSortableColumn="currency" style="width: 100px">
+              Currency
+              <p-sortIcon field="currency"></p-sortIcon>
+            </th>
+            <th pSortableColumn="status" style="width: 120px">
+              Status
+              <p-sortIcon field="status"></p-sortIcon>
+            </th>
+            <th style="width: 150px">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-expense>
+          <tr>
+            <td>
+              <div class="employee-info">
+                <span class="name">{{expense.employeeName}}</span>
+                <span class="id">ID: {{expense.employeeId}}</span>
+              </div>
+            </td>
+            <td>{{expense.date | date}}</td>
+            <td>{{expense.category}}</td>
+            <td>{{expense.amount | number:'1.2-2'}}</td>
+            <td>{{expense.currency}}</td>
+            <td>
+              <p-tag [severity]="getStatusSeverity(expense.status)" 
+                     [value]="expense.status">
+              </p-tag>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button pButton 
+                        icon="pi pi-eye" 
+                        class="p-button-text p-button-sm"
+                        pTooltip="View Details"
+                        (click)="viewExpenseDetails(expense)">
+                </button>
+                <button pButton 
+                        icon="pi pi-check" 
+                        class="p-button-text p-button-success p-button-sm"
+                        pTooltip="Approve"
+                        [disabled]="expense.status !== 'Pending'"
+                        (click)="approveExpense(expense)">
+                </button>
+                <button pButton 
+                        icon="pi pi-times" 
+                        class="p-button-text p-button-danger p-button-sm"
+                        pTooltip="Reject"
+                        [disabled]="expense.status !== 'Pending'"
+                        (click)="rejectExpense(expense)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="7" class="text-center">
+              No expenses found.
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Budget Management -->
+    <div *ngIf="activeTab === 'budgets'" class="tab-content">
+      <div class="content-header">
+        <h3>Budget Management</h3>
+        <div class="header-actions">
+          <button pButton 
+                  icon="pi pi-plus" 
+                  label="New Budget"
+                  class="p-button-success"
+                  (click)="showNewBudgetDialog()">
+          </button>
+        </div>
+      </div>
+
+      <!-- Budget Overview Cards -->
+      <div class="budget-overview">
+        <div class="overview-card total-budget">
+          <div class="card-header">
+            <i class="pi pi-wallet"></i>
+            <span>Total Budget</span>
+          </div>
+          <div class="card-value">
+            ${{totalBudget | number:'1.0-0'}}
+          </div>
+          <div class="card-footer">
+            Financial Year 2024
+          </div>
+        </div>
+
+        <div class="overview-card allocated">
+          <div class="card-header">
+            <i class="pi pi-chart-pie"></i>
+            <span>Allocated</span>
+          </div>
+          <div class="card-value">
+            ${{allocatedBudget | number:'1.0-0'}}
+          </div>
+          <div class="progress-bar">
+            <p-progressBar [value]="getAllocationPercentage()" 
+                          [showValue]="false">
+            </p-progressBar>
+            <span>{{getAllocationPercentage()}}% Allocated</span>
+          </div>
+        </div>
+
+        <div class="overview-card utilized">
+          <div class="card-header">
+            <i class="pi pi-chart-line"></i>
+            <span>Utilized</span>
+          </div>
+          <div class="card-value">
+            ${{utilizedBudget | number:'1.0-0'}}
+          </div>
+          <div class="progress-bar">
+            <p-progressBar [value]="getUtilizationPercentage()" 
+                          [showValue]="false">
+            </p-progressBar>
+            <span>{{getUtilizationPercentage()}}% Utilized</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Budget Allocation Chart -->
+      <div class="budget-charts">
+        <div class="chart-card">
+          <h4>Department Budget Allocation</h4>
+          <p-chart type="pie" 
+                   [data]="departmentBudgetData" 
+                   [options]="chartOptions">
+          </p-chart>
+        </div>
+        <div class="chart-card">
+          <h4>Monthly Budget Utilization</h4>
+          <p-chart type="bar" 
+                   [data]="monthlyUtilizationData" 
+                   [options]="barChartOptions">
+          </p-chart>
+        </div>
+      </div>
+
+      <!-- Budget Allocations Table -->
+      <div class="budget-table-section">
+        <div class="section-header">
+          <h4>Budget Allocations</h4>
+          <div class="table-filters">
+            <p-dropdown [options]="departmentOptions" 
+                       [(ngModel)]="selectedDepartment"
+                       placeholder="Select Department"
+                       (onChange)="filterBudgets()">
+            </p-dropdown>
+            <p-dropdown [options]="yearOptions" 
+                       [(ngModel)]="selectedYear"
+                       placeholder="Select Year"
+                       (onChange)="filterBudgets()">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <p-table [value]="budgetAllocations" 
+                 [paginator]="true" 
+                 [rows]="10"
+                 styleClass="p-datatable-striped">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Department/Employee</th>
+              <th>Budget Type</th>
+              <th>Period</th>
+              <th>Allocated</th>
+              <th>Utilized</th>
+              <th>Remaining</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-budget>
+            <tr>
+              <td>
+                <div class="department-info">
+                  <span class="name">{{budget.departmentName}}</span>
+                  <span class="manager">{{budget.manager}}</span>
+                </div>
+              </td>
+              <td>{{budget.type}}</td>
+              <td>{{budget.period}}</td>
+              <td>${{budget.allocated | number:'1.0-0'}}</td>
+              <td>${{budget.utilized | number:'1.0-0'}}</td>
+              <td>${{budget.allocated - budget.utilized | number:'1.0-0'}}</td>
+              <td>
+                <p-tag [severity]="getBudgetStatusSeverity(budget)" 
+                       [value]="getBudgetStatus(budget)">
+                </p-tag>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button pButton 
+                          icon="pi pi-pencil" 
+                          class="p-button-text p-button-sm"
+                          pTooltip="Edit Budget"
+                          (click)="editBudget(budget)">
+                  </button>
+                  <button pButton 
+                          icon="pi pi-chart-bar" 
+                          class="p-button-text p-button-sm"
+                          pTooltip="View Details"
+                          (click)="viewBudgetDetails(budget)">
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+
+      <!-- New/Edit Budget Dialog -->
+      <p-dialog [(visible)]="showBudgetDialog" 
+                [header]="isEditingBudget ? 'Edit Budget' : 'New Budget'"
+                [modal]="true" 
+                [style]="{width: '500px'}">
+        <form [formGroup]="budgetForm" class="budget-form">
+          <div class="form-field">
+            <label>Department</label>
+            <p-dropdown formControlName="department"
+                       [options]="departmentOptions"
+                       placeholder="Select Department">
+            </p-dropdown>
+          </div>
+
+          <div class="form-field">
+            <label>Budget Type</label>
+            <p-dropdown formControlName="type"
+                       [options]="budgetTypeOptions"
+                       placeholder="Select Type">
+            </p-dropdown>
+          </div>
+
+          <div class="form-field">
+            <label>Period</label>
+            <p-calendar formControlName="period"
+                       [showIcon]="true"
+                       dateFormat="yy"
+                       view="year"
+                       [readonlyInput]="true">
+            </p-calendar>
+          </div>
+
+          <div class="form-field">
+            <label>Amount</label>
+            <p-inputNumber formControlName="amount"
+                          mode="currency" 
+                          currency="USD"
+                          [min]="0">
+            </p-inputNumber>
+          </div>
+
+          <div class="form-field">
+            <label>Notes</label>
+            <textarea pInputTextarea 
+                      formControlName="notes"
+                      rows="3">
+            </textarea>
+          </div>
+        </form>
+
+        <ng-template pTemplate="footer">
+          <button pButton 
+                  label="Cancel" 
+                  class="p-button-text"
+                  (click)="showBudgetDialog = false">
+          </button>
+          <button pButton 
+                  label="Save" 
+                  (click)="saveBudget()"
+                  [disabled]="!budgetForm.valid">
+          </button>
+        </ng-template>
+      </p-dialog>
+    </div>
+
+    <!-- Reimbursements -->
+    <div *ngIf="activeTab === 'reimbursements'" class="tab-content">
+      <div class="content-header">
+        <h3>Reimbursements</h3>
+        <div class="header-actions">
+          <button pButton 
+                  icon="pi pi-file-excel" 
+                  label="Export"
+                  class="p-button-success mr-2"
+                  (click)="exportReimbursements()">
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="search-filters">
+          <span class="p-input-icon-left search-input">
+            <i class="pi pi-search"></i>
+            <input type="text" 
+                   pInputText 
+                   placeholder="Search reimbursements..."
+                   [(ngModel)]="reimbursementFilters.searchTerm"
+                   (input)="filterReimbursements()">
+          </span>
+
+          <p-calendar [(ngModel)]="reimbursementFilters.dateRange" 
+                      selectionMode="range"
+                      [showIcon]="true"
+                      placeholder="Select Date Range"
+                      (onSelect)="filterReimbursements()">
+          </p-calendar>
+
+          <p-dropdown [options]="reimbursementStatusOptions" 
+                     [(ngModel)]="reimbursementFilters.status"
+                     placeholder="Select Status"
+                     (onChange)="filterReimbursements()">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <!-- Reimbursements Table -->
+      <p-table #dt 
+               [value]="filteredReimbursements" 
+               [paginator]="true" 
+               [rows]="10"
+               [rowsPerPageOptions]="[10,25,50]"
+               [loading]="loading"
+               styleClass="p-datatable-striped">
+        
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="employeeName">
+              Employee
+              <p-sortIcon field="employeeName"></p-sortIcon>
+            </th>
+            <th pSortableColumn="requestDate">
+              Request Date
+              <p-sortIcon field="requestDate"></p-sortIcon>
+            </th>
+            <th pSortableColumn="amount">
+              Amount
+              <p-sortIcon field="amount"></p-sortIcon>
+            </th>
+            <th pSortableColumn="paymentMethod">
+              Payment Method
+              <p-sortIcon field="paymentMethod"></p-sortIcon>
+            </th>
+            <th pSortableColumn="status">
+              Status
+              <p-sortIcon field="status"></p-sortIcon>
+            </th>
+            <th style="width: 150px">Actions</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-reimbursement>
+          <tr>
+            <td>
+              <div class="employee-info">
+                <span class="name">{{reimbursement.employeeName}}</span>
+                <span class="id">ID: {{reimbursement.employeeId}}</span>
+              </div>
+            </td>
+            <td>{{reimbursement.requestDate | date}}</td>
+            <td>{{reimbursement.amount | currency}}</td>
+            <td>{{reimbursement.paymentMethod}}</td>
+            <td>
+              <p-tag [severity]="getReimbursementStatusSeverity(reimbursement.status)" 
+                     [value]="reimbursement.status">
+              </p-tag>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button pButton 
+                        icon="pi pi-eye" 
+                        class="p-button-text p-button-sm"
+                        pTooltip="View Details"
+                        (click)="viewReimbursementDetails(reimbursement)">
+                </button>
+                <button pButton 
+                        icon="pi pi-check" 
+                        class="p-button-text p-button-success p-button-sm"
+                        pTooltip="Approve"
+                        [disabled]="reimbursement.status !== 'Pending'"
+                        (click)="approveReimbursement(reimbursement)">
+                </button>
+                <button pButton 
+                        icon="pi pi-times" 
+                        class="p-button-text p-button-danger p-button-sm"
+                        pTooltip="Reject"
+                        [disabled]="reimbursement.status !== 'Pending'"
+                        (click)="rejectReimbursement(reimbursement)">
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Reimbursement Details Dialog -->
+    <p-dialog [(visible)]="showReimbursementDetails" 
+              [header]="'Reimbursement Details'"
+              [modal]="true"
+              [style]="{width: '800px'}"
+              [maximizable]="true">
+      <div class="reimbursement-details" *ngIf="selectedReimbursement">
+        <div class="details-section">
+          <h4>Employee Information</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Name</label>
+              <span>{{selectedReimbursement.employeeName}}</span>
+            </div>
+            <div class="info-item">
+              <label>Employee ID</label>
+              <span>{{selectedReimbursement.employeeId}}</span>
+            </div>
+            <div class="info-item">
+              <label>Department</label>
+              <span>{{selectedReimbursement.department}}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Request Details</h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Request Date</label>
+              <span>{{selectedReimbursement.requestDate | date}}</span>
+            </div>
+            <div class="info-item">
+              <label>Total Amount</label>
+              <span>{{selectedReimbursement.amount | currency}}</span>
+            </div>
+            <div class="info-item">
+              <label>Status</label>
+              <p-tag [severity]="getReimbursementStatusSeverity(selectedReimbursement.status)" 
+                     [value]="selectedReimbursement.status">
+              </p-tag>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section">
+          <h4>Expense Items</h4>
+          <p-table [value]="selectedReimbursement.items" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Receipt</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+              <tr>
+                <td>{{item.description}}</td>
+                <td>{{item.date | date}}</td>
+                <td>{{item.category}}</td>
+                <td>{{item.amount | currency}}</td>
+                <td>
+                  <button pButton 
+                          icon="pi pi-image" 
+                          class="p-button-text p-button-sm"
+                          pTooltip="View Receipt"
+                          (click)="viewReceipt(item)">
+                  </button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="details-section" *ngIf="selectedReimbursement.status === 'Pending'">
+          <h4>Approval Action</h4>
+          <div class="approval-form">
+            <div class="form-field">
+              <label>Comments</label>
+              <textarea pInputTextarea 
+                        [(ngModel)]="approvalComments" 
+                        rows="3"
+                        placeholder="Add your comments here...">
+              </textarea>
+            </div>
+            <div class="approval-buttons">
+              <button pButton 
+                      label="Reject" 
+                      class="p-button-danger"
+                      (click)="rejectWithComments()">
+              </button>
+              <button pButton 
+                      label="Approve" 
+                      class="p-button-success"
+                      (click)="approveWithComments()">
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="details-section" *ngIf="selectedReimbursement.status === 'Approved'">
+          <h4>Payment Details</h4>
+          <div class="payment-form">
+            <div class="form-field">
+              <label>Payment Method</label>
+              <p-dropdown [options]="paymentMethods"
+                         [(ngModel)]="selectedPaymentMethod"
+                         placeholder="Select Payment Method">
+              </p-dropdown>
+            </div>
+            <button pButton 
+                    label="Process Payment"
+                    [disabled]="!selectedPaymentMethod"
+                    (click)="processPayment()">
+            </button>
+          </div>
+        </div>
+      </div>
+    </p-dialog>
+
+    <!-- Financial Reports -->
+    <div *ngIf="activeTab === 'reports'" class="tab-content">
+      <h3>Financial Reports</h3>
+      <!-- Add financial reports content -->
+    </div>
+  </div>
+</div> 

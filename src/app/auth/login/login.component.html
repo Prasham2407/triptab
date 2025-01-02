@@ -1,0 +1,55 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="card-header">
+      <h2>Triptab</h2>
+      <p>Please sign in to continue</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-field">
+        <label for="email">Email</label>
+        <span class="p-input-icon-left">
+          <i class="pi pi-envelope"></i>
+          <input 
+            id="email" 
+            type="email" 
+            pInputText 
+            formControlName="email" 
+            placeholder="Enter your email">
+        </span>
+      </div>
+
+      <div class="form-field">
+        <label for="password">Password</label>
+        <span class="p-input-icon-left p-input-icon-right">
+          <i class="pi pi-lock"></i>
+          <input 
+            id="password" 
+            [type]="showPassword ? 'text' : 'password'" 
+            pInputText 
+            formControlName="password" 
+            placeholder="Enter your password">
+          <i class="pi pi-eye{{showPassword ? '-slash' : ''}}" 
+             (click)="togglePasswordVisibility()"
+             style="cursor: pointer;">
+          </i>
+        </span>
+      </div>
+
+      <div class="form-actions">
+        <div class="remember-me">
+          <p-checkbox formControlName="rememberMe" [binary]="true"></p-checkbox>
+          <label>Remember me</label>
+        </div>
+        <a routerLink="/forgot-password">Forgot Password?</a>
+      </div>
+
+      <button 
+        pButton 
+        type="submit" 
+        label="Sign In"
+        [disabled]="!loginForm.valid">
+      </button>
+    </form>
+  </div>
+</div> 
