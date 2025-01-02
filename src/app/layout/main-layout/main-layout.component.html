@@ -1,9 +1,61 @@
 <div class="layout-wrapper">
-  <div class="layout-sidebar">
-    <div class="sidebar-header">
-      <img src="assets/logo.png" alt="Logo">
+  <div class="layout-header">
+    <div class="header-left">
+      <img src="assets/logo.png" alt="Logo" class="logo">
       <h3>Travel Portal</h3>
     </div>
+    <div class="header-right">
+      <div class="user-profile" (click)="toggleProfileMenu($event)">
+        <div class="profile-avatar">
+          <span class="initials">{{getUserInitials()}}</span>
+        </div>
+        <div class="profile-info">
+          <span class="user-name">{{userName}}</span>
+          <i class="pi pi-angle-down"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-menu" 
+       [class.visible]="showProfileMenu" 
+       [style.top.px]="profileMenuTop"
+       [style.right.px]="profileMenuRight">
+    <div class="menu-header">
+      <div class="user-info">
+        <div class="profile-avatar large">
+          <span class="initials">{{getUserInitials()}}</span>
+        </div>
+        <div class="info-details">
+          <span class="name">{{userName}}</span>
+          <span class="email">{{userEmail}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-items">
+      <button pButton 
+              class="p-button-text w-full" 
+              icon="pi pi-user-edit"
+              label="Edit Profile"
+              (click)="editProfile()">
+      </button>
+      <button pButton 
+              class="p-button-text w-full" 
+              icon="pi pi-lock"
+              label="Change Password"
+              (click)="changePassword()">
+      </button>
+      <div class="menu-divider"></div>
+      <button pButton 
+              class="p-button-text w-full p-button-danger" 
+              icon="pi pi-sign-out"
+              label="Logout"
+              (click)="logout()">
+      </button>
+    </div>
+  </div>
+
+  <div class="layout-sidebar">
 
     <ul class="sidebar-menu">
       <li [class.active]="currentRoute === '/dashboard'" 
@@ -24,14 +76,75 @@
         <i class="pi pi-dollar"></i>
         <span>Manage Finance</span>
       </li>
-      <li (click)="logout()">
+      <!-- <li (click)="logout()">
         <i class="pi pi-sign-out"></i>
         <span>Logout</span>
-      </li>
+      </li> -->
     </ul>
   </div>
 
   <div class="layout-content">
     <router-outlet></router-outlet>
   </div>
+
+  <p-dialog [(visible)]="showChangePasswordDialog" 
+            [header]="'Change Password'"
+            [modal]="true"
+            [style]="{width: '400px'}">
+    <form [formGroup]="passwordForm" class="password-form">
+      <div class="form-field">
+        <label>Current Password</label>
+        <span class="p-input-icon-right">
+          <i class="pi pi-eye{{showCurrentPassword ? '-slash' : ''}}" 
+             (click)="togglePasswordVisibility('current')"
+             style="cursor: pointer;">
+          </i>
+          <input type="{{showCurrentPassword ? 'text' : 'password'}}"
+                 pInputText
+                 formControlName="currentPassword"
+                 placeholder="Enter current password">
+        </span>
+      </div>
+
+      <div class="form-field">
+        <label>New Password</label>
+        <span class="p-input-icon-right">
+          <i class="pi pi-eye{{showNewPassword ? '-slash' : ''}}" 
+             (click)="togglePasswordVisibility('new')"
+             style="cursor: pointer;">
+          </i>
+          <input type="{{showNewPassword ? 'text' : 'password'}}"
+                 pInputText
+                 formControlName="newPassword"
+                 placeholder="Enter new password">
+        </span>
+      </div>
+
+      <div class="form-field">
+        <label>Confirm Password</label>
+        <span class="p-input-icon-right">
+          <i class="pi pi-eye{{showConfirmPassword ? '-slash' : ''}}" 
+             (click)="togglePasswordVisibility('confirm')"
+             style="cursor: pointer;">
+          </i>
+          <input type="{{showConfirmPassword ? 'text' : 'password'}}"
+                 pInputText
+                 formControlName="confirmPassword"
+                 placeholder="Confirm new password">
+        </span>
+      </div>
+    </form>
+    <ng-template pTemplate="footer">
+      <button pButton 
+              label="Cancel" 
+              class="p-button-text"
+              (click)="showChangePasswordDialog = false">
+      </button>
+      <button pButton 
+              label="Change Password" 
+              (click)="updatePassword()"
+              [disabled]="!passwordForm.valid">
+      </button>
+    </ng-template>
+  </p-dialog>
 </div> 

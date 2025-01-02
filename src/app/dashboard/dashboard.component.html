@@ -4,25 +4,51 @@
   <div class="main-content">
     <!-- Original dashboard content when activeView === 'dashboard' -->
     <div class="dashboard-content" *ngIf="activeView === 'dashboard'">
+        <div class="view-header">
+            <h2>Travel Management Dashboard</h2>
+            <div class="search-section"> 
+                <span class="p-input-icon-left search-input"> 
+                    <i class="pi pi-search"></i> 
+                    <input type="text" pInputText placeholder="Search users..." /> 
+                </span>&nbsp;&nbsp;
+                <button pButton icon="pi pi-filter" label="Filter"></button> 
+            </div>
+        </div>
       <div class="dashboard-container">
-        <div class="dashboard-header">
+        <!-- <div class="dashboard-header">
         <button *ngIf="showUserDetail" 
                 pButton 
                 icon="pi pi-arrow-left" 
                 class="p-button-text" 
                 (click)="showUserDetail = false">
-        </button>
-          <h1>{{ showUserDetail ? selectedUser?.name : 'Travel Management Dashboard' }}</h1>
-        </div>
+        </button> -->
+          <!-- <h1>{{ showUserDetail ? selectedUser?.name : 'Travel Management Dashboard' }}</h1>
+          <div class="search-section"> 
+            <span class="p-input-icon-left search-input"> 
+                <i class="pi pi-search"></i> 
+                <input type="text" pInputText placeholder="Search users..." /> 
+            </span> 
+            <button pButton icon="pi pi-filter" label="Filter"></button> 
+            </div> -->
+
+            <!-- <div class="view-header">
+                <h2>Travel Management Dashboard</h2>
+                <button pButton 
+                        icon="pi pi-plus" 
+                        label="New Request" 
+                        (click)="showNewRequestDialog()">
+                </button>
+              </div> -->
+        <!-- </div> -->
 
         <div class="dashboard-content" [class.hidden]="showUserDetail">
-          <div class="search-section">
+          <!-- <div class="search-section">
             <span class="p-input-icon-left search-input">
               <i class="pi pi-search"></i>
               <input type="text" pInputText placeholder="Search users..." />
             </span>
             <button pButton icon="pi pi-filter" label="Filter"></button>
-          </div>
+          </div> -->
 
           <div class="users-grid">
             <div *ngFor="let user of users" class="user-card" (click)="onUserCardClick(user)">
