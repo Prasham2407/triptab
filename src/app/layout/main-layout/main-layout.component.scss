@@ -32,6 +32,42 @@
     }
 
     .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .notifications {
+        position: relative;
+        padding: 0.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background: var(--surface-hover);
+        }
+
+        i {
+          font-size: 1.25rem;
+          color: var(--text-color-secondary);
+        }
+
+        .notification-badge {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: var(--primary-color);
+          color: white;
+          border-radius: 50%;
+          width: 18px;
+          height: 18px;
+          font-size: 0.75rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+
       .user-profile {
         display: flex;
         align-items: center;
@@ -266,6 +302,147 @@
   }
 }
 
+.notifications-menu {
+  position: fixed;
+  width: 360px;
+  max-height: 480px;
+  background: var(--surface-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .menu-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--surface-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+  }
+
+  .notifications-list {
+    overflow-y: auto;
+    max-height: 400px;
+
+    .notification-item {
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 1px solid var(--surface-border);
+
+      &:hover {
+        background: var(--surface-hover);
+      }
+
+      &.unread {
+        background: var(--surface-ground);
+
+        .notification-content {
+          .title {
+            font-weight: 600;
+          }
+        }
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.travel_request {
+          background: var(--primary-color-lighter);
+          color: var(--primary-color);
+        }
+
+        &.travel_approved {
+          background: var(--green-100);
+          color: var(--green-500);
+        }
+
+        &.reimbursement_request {
+          background: var(--orange-100);
+          color: var(--orange-500);
+        }
+
+        &.reimbursement_approved {
+          background: var(--teal-100);
+          color: var(--teal-500);
+        }
+
+        i {
+          font-size: 1.25rem;
+        }
+      }
+
+      .notification-content {
+        flex: 1;
+
+        .notification-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 0.5rem;
+
+          .title {
+            color: var(--text-color);
+          }
+
+          .time {
+            color: var(--text-color-secondary);
+            font-size: 0.875rem;
+          }
+        }
+
+        .description {
+          margin: 0;
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+
+  .empty-notifications {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: var(--text-color-secondary);
+
+    i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
 @media screen and (max-width: 768px) {
   .layout-wrapper {
     .layout-header {
@@ -285,5 +462,11 @@
         }
       }
     }
+  }
+
+  .notifications-menu {
+    width: calc(100vw - 2rem);
+    left: 1rem !important;
+    right: 1rem !important;
   }
 } 
