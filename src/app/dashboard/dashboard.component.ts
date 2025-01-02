@@ -108,6 +108,9 @@ export class DashboardComponent implements OnInit {
     console.log(res);
     if(res.status == "success"){
         this.users = res.data;
+        this.users.forEach((user,index)=>{
+            user.avatar = `assets/avatar${index+1}.jpg`;
+        })
     }
   });
   }
