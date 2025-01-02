@@ -52,6 +52,12 @@ interface Reimbursement {
   items: ReimbursementItem[];
 }
 
+interface ReportFilters {
+  dateRange: Date[];
+  department: string;
+  type: string;
+}
+
 @Component({
   selector: 'app-finance-management',
   templateUrl: './finance-management.component.html',
@@ -169,23 +175,23 @@ export class FinanceManagementComponent implements OnInit {
     responsive: true
   };
 
-  barChartOptions = {
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: {
-          boxWidth: 12
-        }
-      }
-    },
-    maintainAspectRatio: false,
-    responsive: true,
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  };
+//   barChartOptions = {
+//     plugins: {
+//       legend: {
+//         position: 'top',
+//         labels: {
+//           boxWidth: 12
+//         }
+//       }
+//     },
+//     maintainAspectRatio: false,
+//     responsive: true,
+//     scales: {
+//       y: {
+//         beginAtZero: true
+//       }
+//     }
+//   };
 
   // Reimbursement Properties
   reimbursements: Reimbursement[] = [];
@@ -214,6 +220,115 @@ export class FinanceManagementComponent implements OnInit {
     { label: 'Check', value: 'CHECK' },
     { label: 'Wire Transfer', value: 'WIRE' }
   ];
+
+  // Report Properties
+  reportFilters: ReportFilters = {
+    dateRange: [],
+    department: '',
+    type: ''
+  };
+
+  totalExpenses: number = 850000;
+  expensesTrend: number = 12.5;
+  budgetUtilization: number = 75;
+  pendingRequests: number = 8;
+
+  departments = [
+    { label: 'All Departments', value: '' },
+    { label: 'Engineering', value: 'ENG' },
+    { label: 'Sales', value: 'SALES' },
+    { label: 'Marketing', value: 'MKT' },
+    { label: 'Human Resources', value: 'HR' }
+  ];
+
+  reportTypes = [
+    { label: 'All Expenses', value: 'ALL' },
+    { label: 'Travel Only', value: 'TRAVEL' },
+    { label: 'Accommodation', value: 'ACCOMMODATION' },
+    { label: 'Meals & Entertainment', value: 'MEALS' }
+  ];
+
+  departmentExpensesData = {
+    labels: ['Engineering', 'Sales', 'Marketing', 'HR'],
+    datasets: [{
+      label: 'Expenses',
+      data: [300000, 250000, 200000, 100000],
+      backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#26C6DA']
+    }]
+  };
+
+  expenseDistributionData = {
+    labels: ['Travel', 'Accommodation', 'Meals', 'Others'],
+    datasets: [{
+      data: [40, 25, 20, 15],
+      backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#26C6DA']
+    }]
+  };
+
+  monthlyTrendsData = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [{
+      label: 'Expenses',
+      data: [65000, 72000, 68000, 85000, 78000, 90000],
+      borderColor: '#42A5F5',
+      tension: 0.4
+    }]
+  };
+
+  barChartOptions = {
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 12
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value: any) => '$' + value.toLocaleString()
+        }
+      }
+    },
+    maintainAspectRatio: false,
+    responsive: true
+  };
+
+  pieChartOptions = {
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          boxWidth: 12
+        }
+      }
+    },
+    maintainAspectRatio: false,
+    responsive: true
+  };
+
+  lineChartOptions = {
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          boxWidth: 12
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value: any) => '$' + value.toLocaleString()
+        }
+      }
+    },
+    maintainAspectRatio: false,
+    responsive: true
+  };
 
   constructor(
     private messageService: MessageService,
@@ -526,5 +641,19 @@ export class FinanceManagementComponent implements OnInit {
   exportReimbursements() {
     // Implement export logic
     console.log('Exporting reimbursements...');
+  }
+
+  generateReport() {
+    this.loading = true;
+    // Implement report generation logic
+    setTimeout(() => {
+      // Update charts and data based on filters
+      this.loading = false;
+    }, 1000);
+  }
+
+  exportReport() {
+    // Implement export logic
+    console.log('Exporting report...');
   }
 } 

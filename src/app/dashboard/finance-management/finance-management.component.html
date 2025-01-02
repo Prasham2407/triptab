@@ -635,8 +635,172 @@
 
     <!-- Financial Reports -->
     <div *ngIf="activeTab === 'reports'" class="tab-content">
-      <h3>Financial Reports</h3>
-      <!-- Add financial reports content -->
+      <div class="content-header">
+        <h3>Financial Reports & Analytics</h3>
+        <div class="header-actions">
+          <button pButton 
+                  icon="pi pi-file-excel" 
+                  label="Export Report"
+                  class="p-button-success"
+                  (click)="exportReport()">
+          </button>
+        </div>
+      </div>
+
+      <!-- Report Filters -->
+      <div class="filters-section">
+        <div class="search-filters">
+          <p-calendar [(ngModel)]="reportFilters.dateRange" 
+                      selectionMode="range"
+                      [showIcon]="true"
+                      placeholder="Select Date Range"
+                      (onSelect)="generateReport()">
+          </p-calendar>
+
+          <p-dropdown [options]="departments" 
+                     [(ngModel)]="reportFilters.department"
+                     placeholder="Select Department"
+                     (onChange)="generateReport()">
+          </p-dropdown>
+
+          <p-dropdown [options]="reportTypes" 
+                     [(ngModel)]="reportFilters.type"
+                     placeholder="Report Type"
+                     (onChange)="generateReport()">
+          </p-dropdown>
+        </div>
+      </div>
+
+      <!-- Report Overview Cards -->
+      <div class="report-overview">
+        <div class="overview-card total-expenses">
+          <div class="card-header">
+            <i class="pi pi-dollar"></i>
+            <span>Total Expenses</span>
+          </div>
+          <div class="card-value">
+            ${{totalExpenses | number:'1.0-0'}}
+          </div>
+          <div class="trend" [class.positive]="expensesTrend > 0">
+            <i class="pi" [ngClass]="expensesTrend > 0 ? 'pi-arrow-up' : 'pi-arrow-down'"></i>
+            <span>{{expensesTrend}}% vs last period</span>
+          </div>
+        </div>
+
+        <div class="overview-card budget-utilization">
+          <div class="card-header">
+            <i class="pi pi-chart-pie"></i>
+            <span>Budget Utilization</span>
+          </div>
+          <div class="card-value">
+            {{budgetUtilization}}%
+          </div>
+          <div class="progress-bar">
+            <p-progressBar [value]="budgetUtilization" 
+                          [showValue]="false">
+            </p-progressBar>
+          </div>
+        </div>
+
+        <div class="overview-card pending-requests">
+          <div class="card-header">
+            <i class="pi pi-clock"></i>
+            <span>Pending Requests</span>
+          </div>
+          <div class="card-value">
+            {{pendingRequests}}
+          </div>
+          <div class="card-footer">
+            Requires approval
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts-section">
+        <!-- Department Expenses -->
+        <div class="chart-card">
+          <h4>Department Expenses</h4>
+          <p-chart type="bar" 
+                   [data]="departmentExpensesData"
+                   [options]="barChartOptions">
+          </p-chart>
+        </div>
+
+        <!-- Expense Categories -->
+        <div class="chart-card">
+          <h4>Expense Distribution</h4>
+          <p-chart type="pie" 
+                   [data]="expenseDistributionData"
+                   [options]="pieChartOptions">
+          </p-chart>
+        </div>
+
+        <!-- Monthly Trends -->
+        <div class="chart-card full-width">
+          <h4>Monthly Expense Trends</h4>
+          <p-chart type="line" 
+                   [data]="monthlyTrendsData"
+                   [options]="lineChartOptions">
+          </p-chart>
+        </div>
+      </div>
+
+      <!-- Detailed Reports Table -->
+      <div class="detailed-reports">
+        <h4>Detailed Expense Report</h4>
+        <p-table [value]="detailedExpenses" 
+                 [paginator]="true" 
+                 [rows]="10"
+                 [rowsPerPageOptions]="[10,25,50]"
+                 [loading]="loading"
+                 styleClass="p-datatable-striped">
+          
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="employeeName">
+                Employee
+                <p-sortIcon field="employeeName"></p-sortIcon>
+              </th>
+              <th pSortableColumn="department">
+                Department
+                <p-sortIcon field="department"></p-sortIcon>
+              </th>
+              <th pSortableColumn="date">
+                Date
+                <p-sortIcon field="date"></p-sortIcon>
+              </th>
+              <th pSortableColumn="category">
+                Category
+                <p-sortIcon field="category"></p-sortIcon>
+              </th>
+              <th pSortableColumn="amount">
+                Amount
+                <p-sortIcon field="amount"></p-sortIcon>
+              </th>
+              <th pSortableColumn="status">
+                Status
+                <p-sortIcon field="status"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-expense>
+            <tr>
+              <td>{{expense.employeeName}}</td>
+              <td>{{expense.department}}</td>
+              <td>{{expense.date | date}}</td>
+              <td>{{expense.category}}</td>
+              <td>{{expense.amount | currency}}</td>
+              <td>
+                <p-tag [severity]="getStatusSeverity(expense.status)" 
+                       [value]="expense.status">
+                </p-tag>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 </div> 

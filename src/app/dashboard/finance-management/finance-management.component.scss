@@ -422,3 +422,135 @@
     }
   }
 }
+
+.report-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .overview-card {
+    background: var(--surface-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-color-secondary);
+
+      i {
+        font-size: 1.25rem;
+      }
+    }
+
+    .card-value {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    .trend {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--red-500);
+      font-size: 0.875rem;
+
+      &.positive {
+        color: var(--green-500);
+      }
+    }
+
+    .progress-bar {
+      .p-progressbar {
+        height: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+    }
+
+    .card-footer {
+      font-size: 0.875rem;
+      color: var(--text-color-secondary);
+    }
+  }
+}
+
+.charts-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .chart-card {
+    background: var(--surface-card);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+
+    h4 {
+      margin: 0 0 1rem;
+      color: var(--text-color);
+      flex-shrink: 0;
+    }
+
+    ::ng-deep {
+      .p-chart {
+        flex: 1;
+        min-height: 0;
+        position: relative;
+        width: 100%;
+        height: calc(100% - 2rem) !important;
+
+        canvas {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100% !important;
+          height: 100% !important;
+        }
+      }
+    }
+  }
+}
+
+.detailed-reports {
+  background: var(--surface-card);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  h4 {
+    margin: 0 0 1.5rem;
+    color: var(--text-color);
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .report-overview,
+  .charts-section {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-section {
+    .chart-card {
+      height: 350px;
+
+      &.full-width {
+        height: 350px;
+      }
+    }
+  }
+}
